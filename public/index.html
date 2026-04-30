@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Ventas - VentaEntel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .form-group input[type="date"] {
+            cursor: pointer;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.3);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2a5298;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #2a5298;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .info-box p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-box strong {
+            color: #333;
+        }
+        
+        /* Autocomplete styles */
+        .autocomplete-wrapper { position: relative; }
+        .autocomplete-input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; }
+        .autocomplete-input:focus { outline: none; border-color: #2a5298; box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1); }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 6px 6px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; }
+        .autocomplete-list.active { display: block; }
+        .autocomplete-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+        .autocomplete-item:hover { background: #f5f5f5; }
+        .autocomplete-item .name { font-weight: 600; color: #333; }
+        .autocomplete-item .detail { font-size: 12px; color: #666; }
+        .readonly-field { background-color: #f5f5f5 !important; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Formulario de Ventas - VentaEntel</h1>
+            <p>Registro diario de llamadas y ventas</p>
+        </div>
+        
+        <div class="form-content">
+            <div id="message" class="message"></div>
+            
+            <div class="info-box">
+                <p><strong>📅 Fecha:</strong> Se registra automáticamente</p>
+                <p><strong>⚠️ Importante:</strong> Todos los campos son obligatorios</p>
+            </div>
+
+            <form id="salesForm">
+                <!-- Columna 1: Fecha (automático) -->
+                <div class="form-group">
+                    <label for="fecha">Fecha de Registro</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                </div>
+
+                <!-- Supervisor con Autocomplete -->
+                <div class="form-group">
+                    <label for="supervisor">Supervisor <span class="required">*</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="supervisor" class="autocomplete-input" placeholder="Escribe el nombre del supervisor..." autocomplete="off" required>
+                        <div id="supervisor-list" class="autocomplete-list"></div>
+                    </div>
+                </div>
+
+                <!-- Agente con Autocomplete -->
+                <div class="form-group">
+                    <label for="agente">Agente <span class="required">*</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="agente" class="autocomplete-input" placeholder="Escribe el nombre del agente..." autocomplete="off" required>
+                        <div id="agente-list" class="autocomplete-list"></div>
+                    </div>
+                </div>
+
+                <!-- DNI (autocompletado) -->
+                <div class="form-group">
+                    <label for="dni">DNI</label>
+                    <input type="text" id="dni" name="dni" readonly class="readonly-field" placeholder="Se autocompleta al seleccionar agente">
+                </div>
+
+                <!-- User ID (autocompletado) -->
+                <div class="form-group">
+                    <label for="userId">User ID</label>
+                    <input type="text" id="userId" name="userId" readonly class="readonly-field" placeholder="Se autocompleta al seleccionar agente">
+                </div>
+
+                <!-- Campaña (autocompletado) -->
+                <div class="form-group">
+                    <label for="campana">Campaña</label>
+                    <input type="text" id="campana" name="campana" readonly class="readonly-field" placeholder="Se autocompleta al seleccionar agente">
+                </div>
+
+                <!-- Objetivo -->
+                <div class="form-group">
+                    <label for="objetivo">Objetivo Diario <span class="required">*</span></label>
+                    <input type="number" id="objetivo" name="objetivo" placeholder="Cantidad objetivo de ventas" min="0" required>
+                </div>
+
+                <!-- Ventas -->
+                <div class="form-group">
+                    <label for="ventas">Cantidad de Ventas <span class="required">*</span></label>
+                    <input type="number" id="ventas" name="ventas" placeholder="Número de ventas realizadas" min="0" required>
+                </div>
+
+                <!-- Llamadas -->
+                <div class="form-group">
+                    <label for="llamadas">Cantidad de Llamadas <span class="required">*</span></label>
+                    <input type="number" id="llamadas" name="llamadas" placeholder="Total de llamadas realizadas" min="0" required>
+                    <p class="hint">Se usará para calcular la efectividad (ventas/llamadas)</p>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    📤 Enviar Registro
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Enviando datos a Google Sheets...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración real
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwdvQC5BtME95SrtQmCQjqmr67GW56gSkzRoFxYdrE64QzUsU7t1eWrml2fr-iHxMvFA/exec';
+
+        // Lista de supervisores
+        const supervisores = [
+            'Rodriguez Carmona Carlos Alberto', 'Zamudio Zapata Raul Alfredo', 'Valverde Zapata Diego Alonso',
+            'Rojas Yparraguirre Benjamin', 'Mispireta Quino Blas Alfredo', 'Cañas Cortez Miguel Angel',
+            'Nuñez Corcuera Milagros Giovanna', 'Flores Ugarteche Antonio Domingo', 'Arcos Ruiz Fernando Javier',
+            'Melchor Huapaya Gladys Cristina', 'Orihuela Quispe Marco Alberto', 'Luna Padilla Cristal',
+            'Cedeño Medrano Floriangely Del Valle', 'Alarcon Tapullima Jose Alberto', 'Contreras Arenaza Andres Efrain',
+            'Dellepiani Diaz Andy Gianfranco', 'Noriega Barrenechea Andrea Cecilia', 'Pasco Melgarejo Lyneth',
+            'Soto Sayan Mercedes Carolina', 'Vera Cahuana Miguel Angel', 'Antaurco Fernandez Omar Julian',
+            'Acosta Aguirre Mara', 'Segil Pascual Jesica Jennifer', 'Navarro Aguirre Leisy Sarahi',
+            'Peña Farias Italo Fabian', 'Aguayo Morales Mariana Scarleth', 'Farfan Nima Jesus Augusto',
+            'Palma Alvarez Carlos Robert', 'Centurion Cisneros Jordan Harold', 'Cisneros Inga Rubi',
+            'Rosas Prado Gonzalo Fernando', 'Aguilar Cruz Miguel Angel', 'Perez Villa Estrella Celeste',
+            'Rojas Salazar Carlos Alberto Dalua', 'Eguilas Morales Gustavo Ernesto', 'Villanueva Daniel Marilyn Carolina',
+            'Cardenas Lopez Joselyn Maribel', 'Lopez Cornejo Kevin Xavier', 'Guevara Diaz Roberto Andres',
+            'Mendoza Auqui Maria Celeste', 'Erausquin Alvarez Beatriz', 'Lozada Llatas Paolo Fabrizio',
+            'Gacon Baltazar Yannet Carla', 'Garcia Marcos Ricardo Ianpierre', 'Moscol Ventura Claudia Alessandra Elizabeth',
+            'Romero Avila Edgar Armando', 'Narro Diaz Paolo Alonso', 'Bautista Hernandez Dennis Joel',
+            'Cardenas Noronha Gonzalo Patricio', 'Rojas De La Cruz Horacio Jeanpier', 'Romero Soto Eliana Gianella',
+            'Camara Zuñiga Luis Guillermo', 'Chup Navarro Kelly Del Pilar', 'Ramos Delgado Erick David',
+            'Gere Reyna Diego Jesus', 'Ramirez Elias Eduardo Antonino Junior', 'Almeyda Tipian Jose Armando',
+            'Casella Castillo Carlos Gerardo'
+        ];
+
+        // Base de datos de agentes (desde CSV actualizado - 50 agentes)
+        const agentesDB = [
+            { dni: '49083428', nombre: 'Arias Londoño Olga Lucia', userId: 'AAP_OLARIAS', campana: 'Entel - Portabilidad Empresas' },
+            { dni: '40181812', nombre: 'Lupa Solis Liz', userId: 'AAP_LLUPA', campana: 'Entel - Portabilidad Recuperados' },
+            { dni: '25624810', nombre: 'Almonte Magallanes Miriam Doris', userId: 'AAP_MALMONTE', campana: 'Entel - Portabilidad Recuperados' },
+            { dni: '4585374', nombre: 'Astudillo Salazar Orlando Jesus', userId: 'AAP_OASTUDILLO', campana: 'Entel - Portabilidad Prepago Ivr' },
+            { dni: '7260813', nombre: 'Garces Cantos Roany Jair', userId: 'AAP_RGARCES', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '3208530', nombre: 'Duarte Moncada Zulay Antonia', userId: 'AAP_ZDUARTEM', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '46599334', nombre: 'Herreros Ubillus De Valverde Brescia Carolyn', userId: 'AAP_BHERREROS', campana: 'Entel - Portabilidad Recuperados' },
+            { dni: '75384033', nombre: 'Sifuentes Vega Briggeth Stefany', userId: 'AAP_BSIFUENTES', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '70889948', nombre: 'Maguiña Gonzales Carlos Raul', userId: 'AAP_CMAGUINA', campana: 'Entel - Portabilidad Recuperados' },
+            { dni: '70205344', nombre: 'Palacios De La Cruz Marco Antonio', userId: 'AAP_MPALACIOS', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '10429481', nombre: 'Colonia Suarez Richardy Jesus', userId: 'AAP_RSCOLONIA', campana: 'Entel - Portabilidad Recuperados' },
+            { dni: '6788837', nombre: 'Estrada Valle Raul Emerson', userId: 'AAP_RESTRADA', campana: 'Entel - Portabilidad Recuperados' },
+            { dni: '2353093', nombre: 'Guevara Navarro Ervis Gregorio', userId: 'AAP_EGUEVARAN', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '44784703', nombre: 'Martini Arredondo Heidi Eliana', userId: 'AAP_HMARTINIA', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '47381407', nombre: 'Wong Andrade Jean Franco', userId: 'AAP_JAWONG', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '70985595', nombre: 'Chalco Garcia Norma Nataly', userId: 'AAP_NCHALCO', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '2288340', nombre: 'Arcia Rosado Darienne Esther', userId: 'AAP_DRARCIA', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '7961487', nombre: 'Sarmiento Arboleda Ana Maria', userId: 'AAP_ASARMIENTO', campana: 'Entel - On Line Movil Publico' },
+            { dni: '43083647', nombre: 'Matayoshi Adaniya David Manuel', userId: 'AAP_DMATAYOSHI', campana: 'Entel - On Line Movil Publico' },
+            { dni: '44542843', nombre: 'Arias Fonseca Eddy Carolina', userId: 'AAP_EARIAS', campana: 'Entel - On Line Movil Publico' },
+            { dni: '6776266', nombre: 'Espinoza Amado Edwin Cesar', userId: 'AAP_EESPINOZA', campana: 'Entel - On Line Movil Publico' },
+            { dni: '40593539', nombre: 'Sanchez Vera Jenny Rosalyn', userId: 'AAP_JSANCHEZV', campana: 'Entel - On Line Movil Publico' },
+            { dni: '72261194', nombre: 'Manrique Conejo Kervin Sharp', userId: 'AAP_KMANRIQUEC', campana: 'Entel - On Line Movil Publico' },
+            { dni: '3666654', nombre: 'Freytes Sarasty Luz Stella', userId: 'AAP_LFREYTESSAR', campana: 'Entel - On Line Movil Publico' },
+            { dni: '45219662', nombre: 'Carrasco Choque Paola Merian', userId: 'AAP_PCARRASCO', campana: 'Entel - On Line Movil Publico' },
+            { dni: '44026151', nombre: 'Mendoza Llamoza Pavel Salomon', userId: 'AAP_PSMENDOZA', campana: 'Entel - On Line Movil Publico' },
+            { dni: '6944023', nombre: 'Obregon Menendez Edith Norma', userId: 'AAP_EOBREGON', campana: 'Entel - Segundas Lineas' },
+            { dni: '42826172', nombre: 'Aguilar Aguilar Kimberly Marie', userId: 'AAP_KAGUILAR', campana: 'Entel - Portabilidad Prepago Ivr' },
+            { dni: '9923580', nombre: 'Cuzcano Zarate Silvia Liliana', userId: 'AAP_SCUZCANO', campana: 'Entel - Segundas Lineas' },
+            { dni: '72613212', nombre: 'Ranilla Guerrero Fiorella Vanessa', userId: 'AAP_FRANILLA', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '47572485', nombre: 'Orellana Rojas Ricardo', userId: 'AAP_RORELLANA', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '42888748', nombre: 'Curotto Saldaña Norka Katiuska', userId: 'AAP_NCUROTTO', campana: 'Entel - On Line Movil Publico' },
+            { dni: '41082222', nombre: 'Caceres Corrales Laida Uldarica', userId: 'AAP_LCACERESC', campana: 'Entel - Segundas Lineas' },
+            { dni: '42777656', nombre: 'Mera Melo Yvonne Violeta', userId: 'AAP_YMERA', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '45153707', nombre: 'Chavez Lopez Roxana María', userId: 'AAP_RCHAVEZ', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '47845112', nombre: 'Santos Salas Sheyla Lucero', userId: 'AAP_SSANTOS', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '48129100', nombre: 'Saavedra Vasquez Yersi Antoni', userId: 'AAP_YSAAVEDRAV', campana: 'Entel - On Line Movil Publico' },
+            { dni: '46207550', nombre: 'Segura Yamunaque Lizet Del Milagro', userId: 'AAP_LSEGURA', campana: 'Entel - On Line Movil Publico' },
+            { dni: '75473373', nombre: 'Miranda Lopez Marisol', userId: 'AAP_MMIRANDA', campana: 'Entel - Portabilidad Prepago Ivr' },
+            { dni: '41564306', nombre: 'Golac Culqui Cynthia Milagros', userId: 'AAP_CGOLAC', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '6780554', nombre: 'Gutierrez Gutierrez Liliana Maritza', userId: 'AAP_LGUTIERREZG', campana: 'Entel - Hogar Fibra Optica' },
+            { dni: '46924323', nombre: 'Rubio Vega Rudith', userId: 'AAP_RRUBIO', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '46218957', nombre: 'Manchego Rosales Karen Stefania', userId: 'AAP_KMANCHEGO', campana: 'Entel - On Line Movil Publico' },
+            { dni: '42683037', nombre: 'Güere Acosta Leslye Giovanna', userId: 'AAP_LGUERE', campana: 'Entel - Portabilidad Perfilada' },
+            { dni: '48376205', nombre: 'Aguirre Aguirre Karla Thais', userId: 'AAP_KAGUIRREA', campana: 'Entel - Portabilidad Prepago Ivr' },
+            { dni: '47131996', nombre: 'Chávez Cardenas Carol Shusheng', userId: 'AAP_CSCHAVEZ', campana: 'Entel - Caja Tecnico' },
+            { dni: '40041257', nombre: 'Gomez Jaramillo Nancy', userId: 'AAP_NGOMEZJ', campana: 'Entel - Reclamos Hogar' },
+            { dni: '76387897', nombre: 'Salvatierra Huamani Angie Gabriela', userId: 'AAP_ASALVATIERR', campana: 'Entel - Caja Tecnico' },
+            { dni: '76515388', nombre: 'Diaz Sandoval Josefa Medalid', userId: 'AAP_JSANDOVALD', campana: 'Entel - Migraciones' }
+        ];
+
+        // Establecer fecha actual por defecto
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        // === AUTOCOMPLETE SUPERVISOR ===
+        const supervisorInput = document.getElementById('supervisor');
+        const supervisorList = document.getElementById('supervisor-list');
+
+        supervisorInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            supervisorList.innerHTML = '';
+            
+            if (query.length < 1) {
+                supervisorList.classList.remove('active');
+                return;
+            }
+
+            const filtered = supervisores.filter(s => s.toLowerCase().includes(query));
+            
+            if (filtered.length > 0) {
+                filtered.forEach(s => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `<div class="name">${s}</div>`;
+                    item.addEventListener('click', () => {
+                        supervisorInput.value = s;
+                        supervisorList.classList.remove('active');
+                    });
+                    supervisorList.appendChild(item);
+                });
+                supervisorList.classList.add('active');
+            } else {
+                supervisorList.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!supervisorInput.contains(e.target) && !supervisorList.contains(e.target)) {
+                supervisorList.classList.remove('active');
+            }
+        });
+
+        // === AUTOCOMPLETE AGENTE ===
+        const agenteInput = document.getElementById('agente');
+        const agenteList = document.getElementById('agente-list');
+
+        agenteInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            agenteList.innerHTML = '';
+            
+            if (query.length < 1) {
+                agenteList.classList.remove('active');
+                return;
+            }
+
+            const filtered = agentesDB.filter(a => a.nombre.toLowerCase().includes(query));
+            
+            if (filtered.length > 0) {
+                filtered.forEach(a => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.innerHTML = `<div class="name">${a.nombre}</div><div class="detail">DNI: ${a.dni} | ${a.campana}</div>`;
+                    item.addEventListener('click', () => {
+                        // Seleccionar agente
+                        agenteInput.value = a.nombre;
+                        document.getElementById('dni').value = a.dni;
+                        document.getElementById('userId').value = a.userId;
+                        document.getElementById('campana').value = a.campana;
+                        agenteList.classList.remove('active');
+                    });
+                    agenteList.appendChild(item);
+                });
+                agenteList.classList.add('active');
+            } else {
+                agenteList.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!agenteInput.contains(e.target) && !agenteList.contains(e.target)) {
+                agenteList.classList.remove('active');
+            }
+        });
+
+        // === ENVIAR FORMULARIO ===
+        document.getElementById('salesForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const message = document.getElementById('message');
+            
+            // Obtener valores del formulario
+            const formData = {
+                fecha: document.getElementById('fecha').value,
+                supervisor: document.getElementById('supervisor').value,
+                campana: document.getElementById('campana').value,
+                dni: document.getElementById('dni').value,
+                agente: document.getElementById('agente').value,
+                userId: document.getElementById('userId').value,
+                objetivo: parseInt(document.getElementById('objetivo').value),
+                ventas: parseInt(document.getElementById('ventas').value),
+                llamadas: parseInt(document.getElementById('llamadas').value)
+            };
+
+            // Efectividad SIN * 100
+            if (formData.llamadas === 0) {
+                formData.efectividad = 0;
+            } else {
+                formData.efectividad = (formData.ventas / formData.llamadas).toFixed(2);
+            }
+
+            // Mostrar loading
+            submitBtn.disabled = true;
+            loading.classList.add('active');
+            message.className = 'message';
+            message.style.display = 'none';
+
+            try {
+                // Enviar a Google Sheets via Apps Script
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                    mode: 'no-cors'
+                });
+
+                // Mostrar éxito
+                message.textContent = '✅ Registro enviado correctamente a Google Sheets!';
+                message.className = 'message success';
+                
+                // Limpiar formulario
+                document.getElementById('salesForm').reset();
+                document.getElementById('fecha').valueAsDate = new Date();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                message.textContent = '❌ Error al enviar. Verifica la conexión e intenta nuevamente.';
+                message.className = 'message error';
+            } finally {
+                submitBtn.disabled = false;
+                loading.classList.remove('active');
+            }
+        });
+
+        // Validación en tiempo real del DNI
+        document.getElementById('dni').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Validación en tiempo real del nombre del agente
+        document.getElementById('agente').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+        });
+    </script>
+</body>
+</html>

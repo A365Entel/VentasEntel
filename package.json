@@ -1,0 +1,23 @@
+{
+  "name": "venta-entel",
+  "version": "1.0.0",
+  "description": "Sistema de registro de ventas para VentaEntel con Google Sheets",
+  "main": "scripts/importAgents.js",
+  "scripts": {
+    "import": "node scripts/importAgents.js",
+    "import:agents": "node scripts/importAgents.js ./agents.csv"
+  },
+  "keywords": [
+    "google-sheets",
+    "ventas",
+    "entel",
+    "formulario"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "google-auth-library": "^9.0.0",
+    "google-spreadsheet": "^4.0.0",
+    "dotenv": "^16.3.1"
+  }
+}
