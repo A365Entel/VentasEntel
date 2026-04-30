@@ -470,7 +470,7 @@
             if (formData.llamadas === 0) {
                 formData.efectividad = 0;
             } else {
-                formData.efectividad = (formData.ventas / formData.llamadas).toFixed(2);
+                formData.efectividad = formData.ventas / formData.llamadas;
             }
 
             // Mostrar loading
