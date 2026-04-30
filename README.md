@@ -103,7 +103,7 @@ copy .env.example .env
    - **Llamadas**: Total de llamadas realizadas
 3. Clic en **Enviar Registro**
 
-Los datos se enviarán a Google Sheets y se calculará automáticamente la **Efectividad** (ventas/llamadas * 100).
+Los datos se enviarán a Google Sheets y se calculará automáticamente la **Efectividad** (ventas/llamadas).
 
 ## 📥 Importar Agentes desde CSV
 
@@ -141,7 +141,7 @@ node .\scripts\importAgents.js .\agents.csv
 | G | Objetivo Diario | Meta de llamadas |
 | H | Ventas | Cantidad de ventas |
 | I | Llamadas | Total de llamadas |
-| J | Efectividad | % (calculado automáticamente) |
+| J | Efectividad | Ratio calculado automáticamente |
 | K | Fecha Registro | Timestamp del sistema |
 
 ## 🔧 Solución de Problemas

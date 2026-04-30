@@ -28,10 +28,10 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    // Calcular efectividad como porcentaje (ventas / llamadas * 100)
+    // Calcular efectividad (ventas / llamadas)
     let efectividad = 0;
     if (data.llamadas && data.llamadas > 0) {
-      efectividad = (data.ventas / data.llamadas * 100).toFixed(2);
+      efectividad = (data.ventas / data.llamadas).toFixed(2);
     }
     
     // Conectar con la hoja de cálculo
@@ -53,7 +53,7 @@ function doPost(e) {
         'Objetivo Diario', 
         'Ventas', 
         'Llamadas', 
-        'Efectividad (%)',
+        'Efectividad',
         'Fecha Registro'
       ]]);
     }
@@ -149,7 +149,7 @@ function getAgentStats(dni) {
     }
   }
   
-  const efectividad = totalLlamadas > 0 ? (totalVentas / totalLlamadas * 100).toFixed(2) : 0;
+  const efectividad = totalLlamadas > 0 ? (totalVentas / totalLlamadas).toFixed(2) : 0;
   
   return {
     totalVentas,
