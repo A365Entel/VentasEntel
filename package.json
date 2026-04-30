@@ -5,7 +5,8 @@
   "main": "scripts/importAgents.js",
   "scripts": {
     "import": "node scripts/importAgents.js",
-    "import:agents": "node scripts/importAgents.js ./agents.csv"
+    "import:agents": "node scripts/importAgents.js ./agents.csv",
+    "sync:agents": "node scripts/syncAgentsToHtml.js ./agents.csv ./public/index.html"
   },
   "keywords": [
     "google-sheets",
