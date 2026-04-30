@@ -31,7 +31,7 @@ function doPost(e) {
     // Calcular efectividad (ventas / llamadas)
     let efectividad = 0;
     if (data.llamadas && data.llamadas > 0) {
-      efectividad = (data.ventas / data.llamadas).toFixed(2);
+      efectividad = data.ventas / data.llamadas;
     }
     
     // Conectar con la hoja de cálculo
@@ -149,7 +149,7 @@ function getAgentStats(dni) {
     }
   }
   
-  const efectividad = totalLlamadas > 0 ? (totalVentas / totalLlamadas).toFixed(2) : 0;
+  const efectividad = totalLlamadas > 0 ? totalVentas / totalLlamadas : 0;
   
   return {
     totalVentas,
