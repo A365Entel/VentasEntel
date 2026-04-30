@@ -266,7 +266,7 @@
                 <div class="form-group">
                     <label for="llamadas">Cantidad de Llamadas <span class="required">*</span></label>
                     <input type="number" id="llamadas" name="llamadas" placeholder="Total de llamadas realizadas" min="0" required>
-                    <p class="hint">Se usará para calcular la efectividad (ventas/llamadas)</p>
+                    <p class="hint">Se usará para calcular la efectividad (ventas/llamadas * 100)</p>
                 </div>
 
                 <button type="submit" class="btn-submit" id="submitBtn">
@@ -466,11 +466,11 @@
                 llamadas: parseInt(document.getElementById('llamadas').value)
             };
 
-            // Efectividad SIN * 100
+            // Efectividad como porcentaje (ventas / llamadas * 100)
             if (formData.llamadas === 0) {
                 formData.efectividad = 0;
             } else {
-                formData.efectividad = (formData.ventas / formData.llamadas).toFixed(2);
+                formData.efectividad = (formData.ventas / formData.llamadas * 100).toFixed(2);
             }
 
             // Mostrar loading
