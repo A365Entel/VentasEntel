@@ -78,18 +78,31 @@ function syncAgents(agents, filePath) {
 ${agentsJs}
         ];`;
 
-  const updatedHtml = html.replace(
-    /\/\/ Base de datos de agentes \(desde CSV actualizado - \d+ agentes\)\s*const agentesDB = \[[\s\S]*?\n\s*\];/,
-    replacement
-  );
+  const agentsBlockPattern =
+    /\/\/ Base de datos de agentes \(desde CSV actualizado - \d+ agentes\)\s*const\s+agentesDB\s*=\s*\[[\s\S]*?\n\s*\];/;
 
-  if (updatedHtml === html) {
+  let foundAgentsBlock = false;
+  const updatedHtml = html.replace(agentsBlockPattern, () => {
+    foundAgentsBlock = true;
+    return replacement;
+  });
+
+  if (!foundAgentsBlock) {
     throw new Error('No se encontro el bloque agentesDB en el HTML.');
   }
 
-  fs.writeFileSync(filePath, updatedHtml, 'utf8');
+  const changed = updatedHtml !== html;
+  if (changed) {
+    fs.writeFileSync(filePath, updatedHtml, 'utf8');
+  }
+
+  return changed;
 }
 
 const agents = readAgents(csvPath);
-syncAgents(agents, htmlPath);
-console.log(`Agentes sincronizados: ${agents.length}`);
+const changed = syncAgents(agents, htmlPath);
+console.log(
+  changed
+    ? `Agentes sincronizados: ${agents.length}`
+    : `Agentes ya estaban sincronizados: ${agents.length}`
+);
